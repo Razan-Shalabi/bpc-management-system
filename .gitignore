@@ -1,0 +1,10 @@
+out/
+test-out/
+bin/
+*.class
+lib/*.jar
+.settings/
+.project
+.classpath
+.idea/
+*.iml

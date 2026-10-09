@@ -1,13 +1,8 @@
 # BPC – Sales, Purchasing & Warehouse Management System
 
-COMP333 Database Systems – Final Project
-Birzeit Pharmaceutical Company (BPC)
-
-**Team:** Razan Shalabi (1230874) · Yasmine Abdel Haq (1230869)
-
-A role-based JavaFX desktop application backed by MySQL that covers BPC's supply chain:
-purchasing raw materials, warehouse & inventory management, production, and sales of
-finished pharmaceutical products.
+A role-based desktop application for **Birzeit Pharmaceutical Company (BPC)**, built with
+JavaFX and MySQL. It covers the full supply chain: purchasing raw materials, warehouse and
+inventory management, production, and sales of finished pharmaceutical products.
 
 ## Features
 

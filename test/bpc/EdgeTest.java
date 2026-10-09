@@ -242,6 +242,7 @@ public class EdgeTest {
     static void runAll() throws Exception {
         Session.loginAsEmployee(11, "admin", "System Administrator", "General Manager");
         auth();
+        hashing();
         users();
         customers();
         suppliersAndMaterials();
@@ -294,6 +295,34 @@ public class EdgeTest {
             });
         }
         Session.loginAsEmployee(11, "admin", "System Administrator", "General Manager");
+    }
+
+    // ---------------------------------------------------------------- password hashing
+    static void hashing() throws Exception {
+        Main main = new Main();
+        kase("HASH-1 no plain-text passwords in the database", () -> {
+            check(n("SELECT COUNT(*) FROM Employee WHERE Password NOT LIKE 'pbkdf2$%'") == 0, "plain employee password");
+            check(n("SELECT COUNT(*) FROM Customer WHERE Password NOT LIKE 'pbkdf2$%'") == 0, "plain customer password");
+        });
+        kase("HASH-2 the same password gets a different salt each time", () -> {
+            String a = Passwords.hash("secret1"), b = Passwords.hash("secret1");
+            check(!a.equals(b), "identical hashes");
+            check(Passwords.verify("secret1", a) && Passwords.verify("secret1", b), "verify failed");
+            check(!Passwords.verify("Secret1", a), "case-insensitive");
+        });
+        kase("HASH-3 a legacy plain-text password still works once and is upgraded", () -> {
+            try (Statement st = db.createStatement()) {
+                st.executeUpdate("UPDATE Employee SET Password='legacy1' WHERE EmpID=5");
+            }
+            check(call(main, "findEmployee", "tareq", "legacy1") != null, "legacy login failed");
+            String stored = s("SELECT Password FROM Employee WHERE EmpID=5");
+            check(Passwords.isHashed(stored) && Passwords.verify("legacy1", stored), "not upgraded: " + stored);
+            check(call(main, "findEmployee", "tareq", "legacy1") != null, "login after upgrade failed");
+        });
+        kase("HASH-4 a corrupt stored hash fails safely", () -> {
+            check(!Passwords.verify("x", "pbkdf2$abc$!!$??"), "corrupt hash accepted");
+            check(!Passwords.verify("x", null) && !Passwords.verify(null, "x"), "null accepted");
+        });
     }
 
     // ---------------------------------------------------------------- user management
@@ -350,6 +379,7 @@ public class EdgeTest {
             form(add, f -> { base.accept(f); f.set("Email", "new.user@bpc.ps").click("Save"); });
             noErrors();
             check(n("SELECT COUNT(*) FROM Employee WHERE Username='newuser' AND EmpName='New User'") == 1, "not saved");
+            check(Passwords.verify("pass1", s("SELECT Password FROM Employee WHERE Username='newuser'")), "password not hashed");
         });
         kase("USR-13 cannot delete own account", () -> {
             select(t, "table", r -> { try { return id(r) == 11; } catch (Exception e) { return false; } });

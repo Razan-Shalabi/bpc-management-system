@@ -226,15 +226,15 @@ public class Main extends Application {
 
     private EmployeeRow findEmployee(String username, String password) {
         try (PreparedStatement ps = DB.get().prepareStatement(
-                "SELECT EmpID, EmpName, Role FROM Employee " +
-                "WHERE Username=? AND Password COLLATE utf8mb4_bin = ?")) {
+                "SELECT EmpID, EmpName, Role, Password FROM Employee WHERE Username=?")) {
             ps.setString(1, username);
-            ps.setString(2, password);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new EmployeeRow(rs.getInt(1), rs.getString(2), rs.getString(3));
+                if (!rs.next() || !Passwords.verify(password, rs.getString(4))) return null;
+                int id = rs.getInt(1);
+                if (!Passwords.isHashed(rs.getString(4))) {
+                    upgradePassword("UPDATE Employee SET Password=? WHERE EmpID=?", id, password);
                 }
-                return null;
+                return new EmployeeRow(id, rs.getString(2), rs.getString(3));
             }
         } catch (Exception ex) {
             return null;
@@ -243,14 +243,28 @@ public class Main extends Application {
 
     private boolean verifyCustomerPassword(int customerId, String password) {
         try (PreparedStatement ps = DB.get().prepareStatement(
-                "SELECT 1 FROM Customer WHERE CustomerID=? AND Password COLLATE utf8mb4_bin = ?")) {
+                "SELECT Password FROM Customer WHERE CustomerID=?")) {
             ps.setInt(1, customerId);
-            ps.setString(2, password);
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+                if (!rs.next() || !Passwords.verify(password, rs.getString(1))) return false;
+                if (!Passwords.isHashed(rs.getString(1))) {
+                    upgradePassword("UPDATE Customer SET Password=? WHERE CustomerID=?", customerId, password);
+                }
+                return true;
             }
         } catch (Exception ex) {
             return false;
+        }
+    }
+
+    /** Replaces a legacy plain-text password with its hash after a successful login. */
+    private void upgradePassword(String sql, int id, String password) {
+        try (PreparedStatement ps = DB.get().prepareStatement(sql)) {
+            ps.setString(1, Passwords.hash(password));
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (Exception ex) {
+            System.out.println("Could not upgrade password hash: " + ex.getMessage());
         }
     }
 

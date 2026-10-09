@@ -96,14 +96,14 @@ public class CustomerPortal {
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) { err.setText("Account not found."); return; }
                         String stored = rs.getString(1);
-                        if (stored == null || !stored.equals(current.getText())) {
+                        if (!Passwords.verify(current.getText(), stored)) {
                             err.setText("Current password is incorrect."); return;
                         }
                     }
                 }
                 try (PreparedStatement ps = DB.get().prepareStatement(
                         "UPDATE Customer SET Password=? WHERE CustomerID=?")) {
-                    ps.setString(1, next.getText());
+                    ps.setString(1, Passwords.hash(next.getText()));
                     ps.setInt(2, customerId);
                     ps.executeUpdate();
                 }

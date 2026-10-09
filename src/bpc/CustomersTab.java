@@ -164,7 +164,7 @@ public class CustomersTab extends Tab implements Refreshable {
             if (!a.equals(b)){ err.setText("The two passwords do not match."); return; }
             try (PreparedStatement ps = DB.get().prepareStatement(
                     "UPDATE Customer SET Password=? WHERE CustomerID=?")) {
-                ps.setString(1, a);
+                ps.setString(1, Passwords.hash(a));
                 ps.setInt   (2, sel.id());
                 ps.executeUpdate();
                 Util.info("Password reset",
@@ -280,7 +280,7 @@ public class CustomersTab extends Tab implements Refreshable {
                       + "(Username, Password, CustomerName, Type, City, Phone, Email, PaymentTerms) "
                       + "VALUES (?,?,?,?,?,?,?,?)")) {
                         ps.setString(1, uName);
-                        ps.setString(2, pwd);
+                        ps.setString(2, Passwords.hash(pwd));
                         ps.setString(3, name.getText().trim());
                         ps.setString(4, type.getValue());
                         ps.setString(5, city.getText().trim());

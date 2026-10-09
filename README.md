@@ -33,7 +33,8 @@ finished pharmaceutical products.
   stock only when it is *Completed*; *Cancelling* returns the reserved materials.
 - **Purchase orders** can be received or cancelled only while *Pending*, and invoiced once.
 - Expired batches are never sold, transferred or used in production.
-- Passwords are case-sensitive.
+- Passwords are case-sensitive and stored as salted PBKDF2-SHA256 hashes (never as plain text);
+  plain-text passwords from an older copy of the database are upgraded on first login.
 
 ### Roles
 | Module | General Manager | Warehouse Manager | Sales Manager | Procurement Officer | Sales Representative | Production Officer |
@@ -83,8 +84,8 @@ test.bat
 - `SmokeTest` – opens every staff and customer screen; fails on any SQL error or exception
 - `FlowTest` – end-to-end flows: customer order with FEFO allocation, cancellation and stock
   return, paid orders can't be cancelled, PO receiving, duplicate invoices blocked
-- `EdgeTest` – 122 edge cases that fill the real forms and check the message and the database:
-  login and role menus, invalid/too-long/too-large input, duplicates, deleting records still in
+- `EdgeTest` – 126 edge cases that fill the real forms and check the message and the database:
+  login, password hashing and role menus, invalid/too-long/too-large input, duplicates, deleting records still in
   use, dates in the future, discounts above the order value, overpayment (also inside the
   transaction), double receiving from two screens, production reserve/complete/cancel, expired
   stock, customer data isolation, password change, dashboard numbers

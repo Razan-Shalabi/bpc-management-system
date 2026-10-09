@@ -76,7 +76,7 @@ create table Warehouse (
 create table Employee (
     EmpID int auto_increment primary key,
     Username varchar(50) not null unique,
-    Password varchar(60) not null default 'emp',
+    Password varchar(255) not null,
     EmpName varchar(120) not null,
     Role varchar(60) not null,
     Phone varchar(30),
@@ -254,7 +254,7 @@ create table Customer (
     Phone varchar(30),
     Email varchar(120),
     PaymentTerms varchar(60),
-    Password varchar(60)  not null default 'customer'
+    Password varchar(255) not null
 );
 create table SalesOrder (
     OrderID int auto_increment primary key,
@@ -410,18 +410,21 @@ INSERT INTO Warehouse (WarehouseName, Location, Capacity, Type) VALUES
 ('Al-Bireh Finished Goods WH', 'Al-Bireh Industrial Zone', 40000, 'FinishedGoods'),
 ('Ramallah Distribution Center', 'Ramallah', 30000, 'Distribution');
  
+-- Passwords are stored as PBKDF2-SHA256 hashes (see src/bpc/Passwords.java).
+-- Demo passwords: employees emp1..emp10 in order, admin = 'admin';
+-- customers customer1..customer12 in order.
 INSERT INTO Employee (Username, Password, EmpName, Role, Phone, Email, WarehouseID, Salary, HireDate) VALUES
-('khaled', 'emp1', 'Khaled Mansour', 'Warehouse Manager', '+970 592 314871', 'k.mansour@bpc.ps', 1, 4500.00, '2018-03-15'),
-('lina', 'emp2', 'Lina Hammad', 'Warehouse Manager', '+970 596 428903', 'l.hammad@bpc.ps', 2, 4500.00, '2019-07-01'),
-('omar', 'emp3', 'Omar Saleh', 'Warehouse Manager', '+970 598 763214', 'o.saleh@bpc.ps', 3, 4700.00, '2017-09-10'),
-('rania', 'emp4', 'Rania Abu-Awad', 'Procurement Officer', '+970 592 581047', 'r.abuawad@bpc.ps', 1, 3800.00, '2020-01-20'),
-('tareq', 'emp5', 'Tareq Nasser', 'Procurement Officer', '+970 596 239765', 't.nasser@bpc.ps', 1, 3700.00, '2021-05-12'),
-('sara', 'emp6', 'Sara Odeh', 'Sales Representative', '+970 598 412638', 's.odeh@bpc.ps', 3, 3500.00, '2019-11-04'),
-('yousef', 'emp7', 'Yousef Khalil', 'Sales Representative', '+970 592 874156', 'y.khalil@bpc.ps', 3, 3500.00, '2022-02-18'),
-('maha', 'emp8', 'Maha Ibrahim', 'Sales Representative', '+970 596 053729', 'm.ibrahim@bpc.ps', 3, 3600.00, '2020-08-25'),
-('nidal', 'emp9', 'Nidal Hamdan', 'Production Officer', '+970 598 691423', 'n.hamdan@bpc.ps', 2, 2400.00, '2023-03-01'),
-('dina', 'emp10', 'Dina Saadeh', 'Production Officer', '+970 592 147856', 'd.saadeh@bpc.ps', 1, 2400.00, '2022-10-15'),
-('admin', 'admin', 'System Administrator','General Manager', '+970 599 000000', 'admin@bpc.ps', NULL, 8000.00, '2018-01-01');
+('khaled', 'pbkdf2$120000$5ls3+cpqU55SY5IGZ/jAQA$fCbaCTSYkOZ2TKhBiltPKbCXP3IecCZr6yscOEfuqoY', 'Khaled Mansour', 'Warehouse Manager', '+970 592 314871', 'k.mansour@bpc.ps', 1, 4500.00, '2018-03-15'),
+('lina', 'pbkdf2$120000$Gxm24rlGBrkqp4xIr0swIw$QYg3dQFGeKKsmGBNdeSO/CZzhGzayfYmI3zplAW/vfU', 'Lina Hammad', 'Warehouse Manager', '+970 596 428903', 'l.hammad@bpc.ps', 2, 4500.00, '2019-07-01'),
+('omar', 'pbkdf2$120000$Kn5b+lJhgqlY8moL6ubH+w$Z7VgvliUNurMYNJiya/ImzlwfM58YoFGq/koUX8wnFg', 'Omar Saleh', 'Warehouse Manager', '+970 598 763214', 'o.saleh@bpc.ps', 3, 4700.00, '2017-09-10'),
+('rania', 'pbkdf2$120000$0MNNBmv8r4jCdqhrrglafQ$fpZ4Kt89jVBe0GZvz/95LSIyTMPz1Dhwf1GnK2zkFi4', 'Rania Abu-Awad', 'Procurement Officer', '+970 592 581047', 'r.abuawad@bpc.ps', 1, 3800.00, '2020-01-20'),
+('tareq', 'pbkdf2$120000$buCYt63WdADhttrTXsUsNw$5uy6gBmzJlmZ1Zb4sbciMIqy5cFBYoByObXn3N3eH8I', 'Tareq Nasser', 'Procurement Officer', '+970 596 239765', 't.nasser@bpc.ps', 1, 3700.00, '2021-05-12'),
+('sara', 'pbkdf2$120000$BvS0VAF+ydDLgFETb8elDg$2NBXWzMSjZBQPDYmpKJJCltQ55yBdo+PtjRl70Y2WQ8', 'Sara Odeh', 'Sales Representative', '+970 598 412638', 's.odeh@bpc.ps', 3, 3500.00, '2019-11-04'),
+('yousef', 'pbkdf2$120000$T2MRkMPx6AbyucTHdIQoCg$m/HShYn8CzrVq7TbQqRqID+PgFcMCG6LlT9ast3j+WU', 'Yousef Khalil', 'Sales Representative', '+970 592 874156', 'y.khalil@bpc.ps', 3, 3500.00, '2022-02-18'),
+('maha', 'pbkdf2$120000$a4qsC3Y3ctkURpgBSDic/Q$NtZl2a77rT7S6r/es/CGuJHmd+Ye5QhXZ+i1tkqyjDo', 'Maha Ibrahim', 'Sales Representative', '+970 596 053729', 'm.ibrahim@bpc.ps', 3, 3600.00, '2020-08-25'),
+('nidal', 'pbkdf2$120000$qRzqJT28r3KiXGIOWSjdIg$WjMZbVIrOPumDTUmkyDGcf71+iAQf21OuuqT4yuH7b0', 'Nidal Hamdan', 'Production Officer', '+970 598 691423', 'n.hamdan@bpc.ps', 2, 2400.00, '2023-03-01'),
+('dina', 'pbkdf2$120000$B7jw3ttu+y6T/8omVFhY9g$xjbdPiizfSHmFku+NgmExT6Gsg2abrUZRWVGbO3YEDQ', 'Dina Saadeh', 'Production Officer', '+970 592 147856', 'd.saadeh@bpc.ps', 1, 2400.00, '2022-10-15'),
+('admin', 'pbkdf2$120000$xH1tKdaAWsblB2tGAnS35g$RA3hsT0h4d4zc+uG/UR8OjM9hQcSm64JqNSEFu/6gJI', 'System Administrator','General Manager', '+970 599 000000', 'admin@bpc.ps', NULL, 8000.00, '2018-01-01');
  
 INSERT INTO PurchaseOrder (SupplierID, OrderDate, ExpectedDeliveryDate, Status, TotalCost) VALUES
 (1, '2025-06-10', '2025-07-15', 'Received', 18500.00),
@@ -558,18 +561,18 @@ INSERT INTO SupplierPayment (SuppInvoiceID, Amount, PaymentDate, Method) VALUES
 (6, 8000.00, '2026-04-15', 'BankTransfer');
  
 INSERT INTO Customer (Username, CustomerName, Type, City, Phone, Email, PaymentTerms, Password) VALUES
-('najah', 'Al-Najah University Hospital', 'Hospital', 'Nablus', '+970 596 234591', 'pharmacy@najah-hospital.ps','Net 30','customer1'),
-('hebron', 'Hebron Government Hospital', 'Hospital', 'Hebron', '+970 592 221112', 'orders@hebronhospital.ps', 'Net 45','customer2'),
-('ramallah', 'Ramallah Medical Complex', 'Hospital', 'Ramallah', '+970 598 295700', 'pharma@rmc.ps', 'Net 30','customer3'),
-('beitjala', 'Beit Jala Pharmacy', 'Pharmacy', 'Beit Jala', '+970 596 274400', 'info@bj-pharmacy.ps', 'Net 15','customer4'),
-('alquds', 'Al-Quds Pharmacy Chain', 'Pharmacy', 'Jerusalem', '+970 592 627001', 'orders@quds-pharm.ps', 'Net 15','customer5'),
-('gaza', 'Gaza Medical Distributors', 'Distributor', 'Gaza City', '+970 598 282900', 'sales@gmd.ps', 'Net 60','customer6'),
-('nsc', 'Nablus Specialist Clinic', 'Clinic', 'Nablus', '+970 596 233450', 'admin@nsc.ps', 'Net 30','customer7'),
-('bpoly', 'Bethlehem Polyclinic', 'Clinic', 'Bethlehem', '+970 592 274880', 'reception@bpoly.ps', 'Net 30','customer8'),
-('jenin', 'Jenin General Hospital', 'Hospital', 'Jenin', '+970 598 250120', 'pharm@jeningh.ps', 'Net 45','customer9'),
-('tulkarem', 'Tulkarem Pharmacy', 'Pharmacy', 'Tulkarem', '+970 596 267809', 'orders@tulpharm.ps', 'Net 15','customer10'),
-('jpd', 'Jordan Pharma Distributors', 'Export', 'Amman', '+962 6 555 1010', 'imports@jpd.jo', 'Net 60','customer11'),
-('medeast', 'MedEast Distributors', 'Export', 'Dubai', '+971 4 295 0099', 'orders@medeast.ae', 'Net 60','customer12');
+('najah', 'Al-Najah University Hospital', 'Hospital', 'Nablus', '+970 596 234591', 'pharmacy@najah-hospital.ps','Net 30','pbkdf2$120000$MalAV+Fa7h/nlN27tb3J7Q$fdoL8OP5zoAvQ8A1HTHU6EChcs5YD+U/6ig8IDcPwrQ'),
+('hebron', 'Hebron Government Hospital', 'Hospital', 'Hebron', '+970 592 221112', 'orders@hebronhospital.ps', 'Net 45','pbkdf2$120000$yrSK8tMIGGZfcCaVQfoQuA$1yJmJad8A+Y7jp7elzCviYwfqVh69BMC/VNJWNCMLuc'),
+('ramallah', 'Ramallah Medical Complex', 'Hospital', 'Ramallah', '+970 598 295700', 'pharma@rmc.ps', 'Net 30','pbkdf2$120000$LyoABVSoYuOp5mhpSyewlA$ZjueliGz5rmYQAIBBCzCoOmcxxjq0g8tpGZCUlm9yks'),
+('beitjala', 'Beit Jala Pharmacy', 'Pharmacy', 'Beit Jala', '+970 596 274400', 'info@bj-pharmacy.ps', 'Net 15','pbkdf2$120000$w3hcTPTvTaicYA6YYfk6cQ$9GfJ5bPao3ECX3DzfX8KOlhyRWh7e4KHYw5KpRH7Bxc'),
+('alquds', 'Al-Quds Pharmacy Chain', 'Pharmacy', 'Jerusalem', '+970 592 627001', 'orders@quds-pharm.ps', 'Net 15','pbkdf2$120000$COtO+VWu7H0BbAiOWtZPrw$S1XT/uW9LuBopMcGNFZlhFIGaroVAIZV0U2FgZLhITk'),
+('gaza', 'Gaza Medical Distributors', 'Distributor', 'Gaza City', '+970 598 282900', 'sales@gmd.ps', 'Net 60','pbkdf2$120000$LeRL11pKc95uJE4ODR3k0A$eBe5ME2wdcYeqwensfwFo6KZZRSChRQXgy/srKdqTpo'),
+('nsc', 'Nablus Specialist Clinic', 'Clinic', 'Nablus', '+970 596 233450', 'admin@nsc.ps', 'Net 30','pbkdf2$120000$08kdiY0an3aEu7BAHlVp8A$Hq6mT1e6yobYAkcF6dKr7mmsz6+0x7RUvfIvLrf1oyM'),
+('bpoly', 'Bethlehem Polyclinic', 'Clinic', 'Bethlehem', '+970 592 274880', 'reception@bpoly.ps', 'Net 30','pbkdf2$120000$gU2CvYobNYhKDmzB7CiSww$j1ln4hr1FCEPOCPmqyop1oJ9Blc6hIa+iObQ7KTdHSU'),
+('jenin', 'Jenin General Hospital', 'Hospital', 'Jenin', '+970 598 250120', 'pharm@jeningh.ps', 'Net 45','pbkdf2$120000$jsH0W8ax3JgEZBwr2YROnw$FDjHAHY2v4vGeInfQIoXbhBj7sDnFkKtMcU7j2t6kPE'),
+('tulkarem', 'Tulkarem Pharmacy', 'Pharmacy', 'Tulkarem', '+970 596 267809', 'orders@tulpharm.ps', 'Net 15','pbkdf2$120000$E3pANJ3b74tqanu8IlxpMA$BCEW9Kh51xAMlctOE8l7/lXeZAVk2ac22yXWMIl9bAw'),
+('jpd', 'Jordan Pharma Distributors', 'Export', 'Amman', '+962 6 555 1010', 'imports@jpd.jo', 'Net 60','pbkdf2$120000$B2AQgLHSVwVbFt+S4iJimg$PEvjMH6hCJ0f4eKWjbQF1OO8PaZuirKPFaWCNua/ZIY'),
+('medeast', 'MedEast Distributors', 'Export', 'Dubai', '+971 4 295 0099', 'orders@medeast.ae', 'Net 60','pbkdf2$120000$fsanzA8TvlHzppO25JUAIA$9HFgTehD14/ZTganVrVHYgwPzE2cGgTclkOwWUMQxZM');
  
 INSERT INTO SalesOrder (CustomerID, OrderDate, DeliveryDate, Status, TotalAmount, Discount) VALUES
 ( 1, '2025-06-05', '2025-06-09', 'Delivered', 9470.00, 250.00),

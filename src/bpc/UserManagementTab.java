@@ -197,7 +197,7 @@ public class UserManagementTab extends Tab implements Refreshable {
             if (!a.equals(b))   { err.setText("The two passwords do not match."); return; }
             try (PreparedStatement ps = DB.get().prepareStatement(
                     "UPDATE Employee SET Password=? WHERE EmpID=?")) {
-                ps.setString(1, a);
+                ps.setString(1, Passwords.hash(a));
                 ps.setInt   (2, sel.id());
                 ps.executeUpdate();
                 Util.info("Password reset",
@@ -334,7 +334,7 @@ public class UserManagementTab extends Tab implements Refreshable {
                           + "(Username, Password, EmpName, Role, Phone, Email, WarehouseID, Salary, HireDate) "
                           + "VALUES (?,?,?,?,?,?,?,?,?)")) {
                         ps.setString(1, uName);
-                        ps.setString(2, pwd);
+                        ps.setString(2, Passwords.hash(pwd));
                         ps.setString(3, nm);
                         ps.setString(4, rl);
                         ps.setString(5, ph);
